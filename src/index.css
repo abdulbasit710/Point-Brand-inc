@@ -1,0 +1,230 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ───────────────────────────  Theme tokens  ─────────────────────────── */
+:root,
+.dark {
+  --bg: #06060a;
+  --bg-2: #0a0a12;
+  --panel: rgba(255, 255, 255, 0.04);
+  --panel-solid: #11111b;
+  --line: rgba(255, 255, 255, 0.09);
+  --fg: #ececf2;
+  --fg-muted: #9a9aae;
+  --glow: rgba(238, 140, 110, 0.20);
+  --scrim: rgba(6, 6, 10, 0.82);
+  color-scheme: dark;
+}
+
+.light {
+  --bg: #f6f4fb;
+  --bg-2: #ffffff;
+  --panel: rgba(255, 255, 255, 0.72);
+  --panel-solid: #ffffff;
+  --line: rgba(26, 16, 36, 0.10);
+  --fg: #160c22;
+  --fg-muted: #5c5468;
+  --glow: rgba(123, 63, 160, 0.16);
+  --scrim: rgba(246, 244, 251, 0.82);
+  color-scheme: light;
+}
+
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    background: rgba(238, 140, 110, 0.28);
+    color: var(--fg);
+  }
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(#ee8c6e, #8b4fb0);
+    border-radius: 99px;
+    border: 2px solid var(--bg);
+  }
+  /* Lenis */
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-stopped { overflow: hidden; }
+}
+
+@layer components {
+  .container-pb {
+    @apply mx-auto w-full max-w-8xl px-5 sm:px-8 lg:px-12;
+  }
+  .text-gradient {
+    @apply bg-brand-gradient bg-clip-text text-transparent;
+  }
+  .glass {
+    background: var(--panel);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--line);
+  }
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-line px-3.5 py-1.5
+           text-[0.7rem] font-medium uppercase tracking-[0.22em] text-fg-muted;
+  }
+  .pb-input {
+    @apply w-full rounded-xl border border-line bg-bg-2 px-4 py-3 text-sm text-fg
+           placeholder:text-fg-muted outline-none transition-colors duration-200
+           focus:border-coral/60 focus:ring-2 focus:ring-coral/20;
+  }
+  /* Gradient ring border using mask trick */
+  .border-gradient {
+    position: relative;
+  }
+  .border-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(238,140,110,0.6), rgba(139,79,176,0.5));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+/* ───────────────────────────  Brand loader  ─────────────────────────── */
+@keyframes pb-loader-rotate {
+  to { transform: rotate(1turn); }
+}
+@keyframes pb-loader-letter {
+  0%, 100% { opacity: 0.4; transform: translateY(0) scale(1); text-shadow: none; }
+  22% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1.12);
+    text-shadow: 0 0 22px rgba(238, 140, 110, 0.75), 0 0 40px rgba(139, 79, 176, 0.5);
+  }
+}
+.pb-loader-ring {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    #ee8c6e 22%,
+    #c766a0 50%,
+    #8b4fb0 78%,
+    transparent 100%
+  );
+  filter: blur(42px);
+  opacity: 0.5;
+  animation: pb-loader-rotate 2.4s linear infinite;
+}
+.pb-loader-letter {
+  display: inline-block;
+  color: var(--fg);
+  opacity: 0.4;
+  animation: pb-loader-letter 2.2s ease-in-out infinite;
+}
+
+/* ─────────────────────  Liquid-glass hover panel  ───────────────────── */
+.pb-liquid-glass {
+  background: linear-gradient(
+    to top,
+    rgba(20, 14, 30, 0.55),
+    rgba(255, 255, 255, 0.08)
+  );
+  backdrop-filter: blur(18px) saturate(1.6);
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 -8px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* ─────────────────────  GlowCard pointer spotlight  ───────────────────── */
+[data-glow]::before,
+[data-glow]::after {
+  pointer-events: none;
+  content: '';
+  position: absolute;
+  inset: calc(var(--border-size) * -1);
+  border: var(--border-size) solid transparent;
+  border-radius: calc(var(--radius) * 1px);
+  background-attachment: fixed;
+  background-size: calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)));
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
+  mask-clip: padding-box, border-box;
+  mask-composite: intersect;
+  -webkit-mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
+  -webkit-mask-clip: padding-box, border-box;
+  -webkit-mask-composite: source-in;
+}
+
+[data-glow]::before {
+  background-image: radial-gradient(
+    calc(var(--spotlight-size) * 0.75) calc(var(--spotlight-size) * 0.75) at
+    calc(var(--x, 0) * 1px)
+    calc(var(--y, 0) * 1px),
+    hsl(var(--hue, 210) calc(var(--saturation, 100) * 1%) calc(var(--lightness, 50) * 1%) / var(--border-spot-opacity, 1)), transparent 100%
+  );
+  filter: brightness(2);
+}
+
+[data-glow]::after {
+  background-image: radial-gradient(
+    calc(var(--spotlight-size) * 0.5) calc(var(--spotlight-size) * 0.5) at
+    calc(var(--x, 0) * 1px)
+    calc(var(--y, 0) * 1px),
+    hsl(0 100% 100% / var(--border-light-opacity, 0.8)), transparent 100%
+  );
+}
+
+[data-glow] [data-glow] {
+  position: absolute;
+  inset: 0;
+  will-change: filter;
+  opacity: var(--outer, 1);
+  border-radius: calc(var(--radius) * 1px);
+  border-width: calc(var(--border-size) * 20);
+  filter: blur(calc(var(--border-size) * 10));
+  background: none;
+  pointer-events: none;
+  border: none;
+}
+
+[data-glow] > [data-glow]::before {
+  inset: -10px;
+  border-width: 10px;
+}
+
+/* Respect reduced motion globally */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
